@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendario de Llegadas</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            text-align: center;
+        }
+        .calendar-container {
+            max-width: 1000px;
+            margin: 20px auto;
+        }
+        .month {
+            margin-bottom: 20px;
+        }
+        .month-title {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+        }
+        .day {
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: center;
+            background-color: #fff;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .day.red {
+            background-color: #f8d7da;
+            border-color: #f5c2c7;
+        }
+        .modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 500px;
+        }
+        .modal-close {
+            background-color: #f44336;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .container-list {
+            list-style: none;
+            padding: 0;
+        }
+        .container-item {
+            margin: 10px 0;
+            padding: 10px;
+            background-color: #e9ecef;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Calendario de Llegadas 2025</h1>
+    <div class="calendar-container" id="calendar"></div>
+
+    <div id="modal" class="modal">
+        <div class="modal-header" id="modal-header"></div>
+        <div class="modal-body" id="modal-body"></div>
+        <button class="modal-close" onclick="closeModal()">Cerrar</button>
+    </div>
+
+    <script>
+        const arrivals = {
+            '2025-02-12': ['HAMU2005372', 'HLBU3126701', 'TEMU8468056'],
+            '2025-02-17': ['CMAU6816660', 'TEMU6341479', 'TXGU7148723'],
+            '2025-02-21': ['HLXU8312199', 'GCXU5146161', 'FANU1861020'],
+            '2025-03-05': ['CMAU1234567', 'TEMU7890123'],
+            '2025-04-10': ['TXGU0987654', 'HLXU4567890'],
+        };
+
+        const containerContents = {
+            'HAMU2005372': ['Postes W8x13', 'Tornillos M10x30'],
+            'HLBU3126701': ['Postes W8x18', 'Tornillos M12x40'],
+            'TEMU8468056': ['Perfiles de Giro', 'Cables de corriente'],
+        };
+
+        function generateCalendar() {
+            const calendarContainer = document.getElementById('calendar');
+            for (let month = 1; month <= 12; month++) {
+                let monthDiv = document.createElement('div');
+                monthDiv.className = 'month';
+                monthDiv.innerHTML = `<div class='month-title'>${new Date(2025, month - 1).toLocaleString('default', { month: 'long' })}</div>`;
+                let calendarGrid = document.createElement('div');
+                calendarGrid.className = 'calendar';
+                for (let day = 1; day <= 31; day++) {
+                    let dateKey = `2025-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+                    let dayDiv = document.createElement('div');
+                    dayDiv.className = arrivals[dateKey] ? 'day red' : 'day';
+                    dayDiv.innerHTML = `<div class='day-number'>${day}</div>`;
+                    if (arrivals[dateKey]) {
+                        dayDiv.onclick = () => showModal(dateKey, arrivals[dateKey]);
+                    }
+                    calendarGrid.appendChild(dayDiv);
+                }
+                monthDiv.appendChild(calendarGrid);
+                calendarContainer.appendChild(monthDiv);
+            }
+        }
+
+        function showModal(date, containers) {
+            const header = `Llegadas del ${date}`;
+            const body = containers.length > 0 
+                ? `<ul class='container-list'>${containers.map(container => `<li class='container-item' onclick="showContainerDetails('${container}')">Contenedor: ${container}</li>`).join('')}</ul>`
+                : 'No hay contenedores programados para este día.';
+            document.getElementById('modal-header').innerText = header;
+            document.getElementById('modal-body').innerHTML = body;
+            document.getElementById('modal').style.display = 'block';
+        }
+
+        function showContainerDetails(container) {
+            const items = containerContents[container] || ['Información no disponible'];
+            document.getElementById('modal-body').innerHTML = `<h3>Contenido del Contenedor ${container}</h3><ul>${items.map(item => `<li>${item}</li>`).join('')}</ul>`;
+        }
+
+        function closeModal() {
+            document.getElementById('modal').style.display = 'none';
+        }
+
+        generateCalendar();
+    </script>
+</body>
+</html>
